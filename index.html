@@ -58,16 +58,26 @@
       flex-direction: column;
       align-items: center;
       gap: 11px;
-      cursor: pointer;
+      cursor: grab;
       text-decoration: none;
       width: 112px;
       padding: 12px 6px;
       border-radius: 12px;
-      transition: background 0.15s ease;
+      transition: background 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
     }
 
     .card:hover {
       background: rgba(255,255,255,0.35);
+    }
+
+    .card.dragging {
+      opacity: 0.35;
+      cursor: grabbing;
+    }
+
+    .card.drag-over {
+      background: rgba(79,110,247,0.12);
+      transform: scale(1.05);
     }
 
     /* Outer ring = same as page bg, creates the halo effect */
@@ -306,7 +316,7 @@
 <body>
 
 <h1 class="page-title">Mother of All Dashboards</h1>
-<p class="page-version">v 1.004</p>
+<p class="page-version">v 1.005</p>
 <div class="grid" id="grid"></div>
 
 <!-- Modal -->
@@ -392,6 +402,9 @@
     set(dbRef, data);
   }
 
+  /* ── Drag-and-drop state ── */
+  let dragSrcId = null;
+
   /* ── Render ── */
   function renderGrid(data) {
     const grid = document.getElementById('grid');
@@ -404,7 +417,39 @@
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
       a.dataset.id = e.id;
+      a.draggable = true;
+
       a.addEventListener('contextmenu', onCtxMenu);
+
+      /* Drag events */
+      a.addEventListener('dragstart', (ev) => {
+        dragSrcId = e.id;
+        setTimeout(() => a.classList.add('dragging'), 0);
+        ev.dataTransfer.effectAllowed = 'move';
+      });
+      a.addEventListener('dragend', () => {
+        a.classList.remove('dragging');
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('drag-over'));
+      });
+      a.addEventListener('dragover', (ev) => {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = 'move';
+        if (e.id !== dragSrcId) a.classList.add('drag-over');
+      });
+      a.addEventListener('dragleave', () => a.classList.remove('drag-over'));
+      a.addEventListener('drop', (ev) => {
+        ev.preventDefault();
+        a.classList.remove('drag-over');
+        if (dragSrcId === e.id) return;
+        const from = entries.findIndex(x => x.id === dragSrcId);
+        const to   = entries.findIndex(x => x.id === e.id);
+        const reordered = [...entries];
+        const [moved] = reordered.splice(from, 1);
+        reordered.splice(to, 0, moved);
+        entries = reordered;
+        saveToFirebase(entries);
+      });
+
       a.innerHTML = `
         <div class="icon-outer">
           <div class="icon-inner" style="background:${e.color};">${e.icon}</div>
