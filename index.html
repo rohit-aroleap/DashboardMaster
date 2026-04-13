@@ -306,7 +306,7 @@
 <body>
 
 <h1 class="page-title">Mother of All Dashboards</h1>
-<p class="page-version">v 1.002 &nbsp;·&nbsp; <span class="export-link" onclick="exportConfig()">Export config</span></p>
+<p class="page-version">v 1.003 &nbsp;·&nbsp; <span class="export-link" onclick="exportConfig()">Export config</span></p>
 <div class="grid" id="grid"></div>
 
 <!-- Modal -->
@@ -350,14 +350,15 @@
   ];
 
   const DEFAULTS = [
-    { id: 1, name: 'Workout Calendar',   url: '#', icon: 'W', color: '#c05fa3' },
-    { id: 2, name: 'Habit Dashboard',    url: '#', icon: 'H', color: '#27ae7a' },
-    { id: 3, name: 'Sales Dashboard',    url: '#', icon: 'S', color: '#e74c6f' },
-    { id: 4, name: 'Subscription Mgmt',  url: '#', icon: '🔖', color: '#e8703a' },
-    { id: 5, name: 'End to End',         url: '#', icon: '+', color: '#27ae7a' },
-    { id: 6, name: 'Workout Planner',    url: '#', icon: 'A', color: '#4f6ef7' },
-    { id: 7, name: 'Route',              url: '#', icon: 'R', color: '#8e5ff5' },
-    { id: 8, name: 'Ferra Data Analyst', url: '#', icon: 'R', color: '#2d6a2d' },
+    { id: 1, name: 'Workout Calendar',     url: 'https://public-consistency-dashboard.vercel.app/', icon: 'W', color: '#c05fa3' },
+    { id: 2, name: 'Habit Dashboard',      url: 'https://ferra-user-activity-dashboard.vercel.app/', icon: 'H', color: '#27ae7a' },
+    { id: 3, name: 'Sales Dashboard',      url: 'https://ferra-waitlist.vercel.app/', icon: 'S', color: '#e74c6f' },
+    { id: 4, name: 'Subscription Dashboard', url: 'https://ferra-subscription-manager.vercel.app/', icon: '🔖', color: '#e8703a' },
+    { id: 5, name: 'End to End',           url: 'https://docs.google.com/spreadsheets/d/1DehqWCCWQ0Lsuz_sHri3yv3gT1ajB87N3Grfo9miBwM/edit?gid=1263811655#gid=1263811655', icon: '+', color: '#27ae7a' },
+    { id: 6, name: 'Workout Planner',      url: 'https://aroleap-workout-plan-management.vercel.app/plan/edit/CeX2hGueVTYkhPgk0NDa', icon: 'A', color: '#4f6ef7' },
+    { id: 7, name: 'Route',                url: 'https://rohit-aroleap.github.io/Route-Tracker/', icon: 'R', color: '#8e5ff5' },
+    { id: 8, name: 'Ferra Data Analyst',   url: 'https://rohit-aroleap.github.io/ferra-cohort/', icon: 'R', color: '#2d6a2d' },
+    { id: 9, name: 'Payment Link',         url: 'https://subscriptions.ferra.club/subscribe.html', icon: 'P', color: '#2196c8' },
   ];
 
   let entries = JSON.parse(localStorage.getItem('dashboards') || 'null') || [...DEFAULTS];
