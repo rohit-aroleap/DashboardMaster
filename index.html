@@ -306,7 +306,7 @@
 <body>
 
 <h1 class="page-title">Mother of All Dashboards</h1>
-<p class="page-version">v 1.003 &nbsp;·&nbsp; <span class="export-link" onclick="exportConfig()">Export config</span></p>
+<p class="page-version">v 1.004</p>
 <div class="grid" id="grid"></div>
 
 <!-- Modal -->
@@ -343,37 +343,61 @@
   <div class="ctx-item danger" onclick="ctxDelete()">🗑️ Remove</div>
 </div>
 
-<script>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDsKcndrK7RLA1btM0JzdQJ6ToP_byqBSw",
+    authDomain: "motherofdashboard-53d8d.firebaseapp.com",
+    databaseURL: "https://motherofdashboard-53d8d-default-rtdb.firebaseio.com",
+    projectId: "motherofdashboard-53d8d",
+    storageBucket: "motherofdashboard-53d8d.firebasestorage.app",
+    messagingSenderId: "416762890791",
+    appId: "1:416762890791:web:caef8d7e26c7847862dc02",
+    measurementId: "G-RD3Q792CMR"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+  const dbRef = ref(db, 'shortcuts');
+
   const COLORS = [
     '#e74c6f','#e8703a','#d4a017','#27ae7a','#2196c8',
     '#4f6ef7','#8e5ff5','#c05fa3','#5a7a8a','#2d6a2d'
   ];
 
   const DEFAULTS = [
-    { id: 1, name: 'Workout Calendar',     url: 'https://public-consistency-dashboard.vercel.app/', icon: 'W', color: '#c05fa3' },
-    { id: 2, name: 'Habit Dashboard',      url: 'https://ferra-user-activity-dashboard.vercel.app/', icon: 'H', color: '#27ae7a' },
-    { id: 3, name: 'Sales Dashboard',      url: 'https://ferra-waitlist.vercel.app/', icon: 'S', color: '#e74c6f' },
+    { id: 1, name: 'Workout Calendar',       url: 'https://public-consistency-dashboard.vercel.app/', icon: 'W', color: '#c05fa3' },
+    { id: 2, name: 'Habit Dashboard',        url: 'https://ferra-user-activity-dashboard.vercel.app/', icon: 'H', color: '#27ae7a' },
+    { id: 3, name: 'Sales Dashboard',        url: 'https://ferra-waitlist.vercel.app/', icon: 'S', color: '#e74c6f' },
     { id: 4, name: 'Subscription Dashboard', url: 'https://ferra-subscription-manager.vercel.app/', icon: '🔖', color: '#e8703a' },
-    { id: 5, name: 'End to End',           url: 'https://docs.google.com/spreadsheets/d/1DehqWCCWQ0Lsuz_sHri3yv3gT1ajB87N3Grfo9miBwM/edit?gid=1263811655#gid=1263811655', icon: '+', color: '#27ae7a' },
-    { id: 6, name: 'Workout Planner',      url: 'https://aroleap-workout-plan-management.vercel.app/plan/edit/CeX2hGueVTYkhPgk0NDa', icon: 'A', color: '#4f6ef7' },
-    { id: 7, name: 'Route',                url: 'https://rohit-aroleap.github.io/Route-Tracker/', icon: 'R', color: '#8e5ff5' },
-    { id: 8, name: 'Ferra Data Analyst',   url: 'https://rohit-aroleap.github.io/ferra-cohort/', icon: 'R', color: '#2d6a2d' },
-    { id: 9, name: 'Payment Link',         url: 'https://subscriptions.ferra.club/subscribe.html', icon: 'P', color: '#2196c8' },
+    { id: 5, name: 'End to End',             url: 'https://docs.google.com/spreadsheets/d/1DehqWCCWQ0Lsuz_sHri3yv3gT1ajB87N3Grfo9miBwM/edit?gid=1263811655#gid=1263811655', icon: '+', color: '#27ae7a' },
+    { id: 6, name: 'Workout Planner',        url: 'https://aroleap-workout-plan-management.vercel.app/plan/edit/CeX2hGueVTYkhPgk0NDa', icon: 'A', color: '#4f6ef7' },
+    { id: 7, name: 'Route',                  url: 'https://rohit-aroleap.github.io/Route-Tracker/', icon: 'R', color: '#8e5ff5' },
+    { id: 8, name: 'Ferra Data Analyst',     url: 'https://rohit-aroleap.github.io/ferra-cohort/', icon: 'R', color: '#2d6a2d' },
+    { id: 9, name: 'Payment Link',           url: 'https://subscriptions.ferra.club/subscribe.html', icon: 'P', color: '#2196c8' },
   ];
 
-  let entries = JSON.parse(localStorage.getItem('dashboards') || 'null') || [...DEFAULTS];
+  let entries = [];
   let editingId = null;
   let ctxTargetId = null;
   let selectedColor = COLORS[0];
 
-  function save() { localStorage.setItem('dashboards', JSON.stringify(entries)); }
   function nextId() { return entries.length ? Math.max(...entries.map(e => e.id)) + 1 : 1; }
 
-  function renderGrid() {
+  /* ── Save all entries to Firebase ── */
+  function saveToFirebase(data) {
+    set(dbRef, data);
+  }
+
+  /* ── Render ── */
+  function renderGrid(data) {
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
 
-    entries.forEach(e => {
+    data.forEach(e => {
       const a = document.createElement('a');
       a.className = 'card';
       a.href = e.url;
@@ -402,6 +426,19 @@
     grid.appendChild(add);
   }
 
+  /* ── Real-time listener — fires for every user instantly ── */
+  onValue(dbRef, (snapshot) => {
+    if (snapshot.exists()) {
+      entries = snapshot.val();
+    } else {
+      /* First ever load — seed Firebase with defaults */
+      entries = [...DEFAULTS];
+      saveToFirebase(entries);
+    }
+    renderGrid(entries);
+  });
+
+  /* ── Modal ── */
   function buildColorRow(current) {
     const row = document.getElementById('colorRow');
     row.innerHTML = '';
@@ -445,9 +482,11 @@
     } else {
       entries.push({ id: nextId(), name, url, icon, color: selectedColor });
     }
-    save(); closeModal(); renderGrid();
+    saveToFirebase(entries);
+    closeModal();
   }
 
+  /* ── Context menu ── */
   function onCtxMenu(ev) {
     ev.preventDefault();
     ctxTargetId = +ev.currentTarget.dataset.id;
@@ -458,21 +497,15 @@
   }
 
   function closeCtx() { document.getElementById('ctxMenu').classList.remove('open'); }
+
   function ctxEdit()   { closeCtx(); openModal(ctxTargetId); }
   function ctxOpen()   { closeCtx(); const e = entries.find(e => e.id === ctxTargetId); if (e) window.open(e.url, '_blank'); }
   function ctxDelete() {
     closeCtx();
     if (confirm('Remove this shortcut?')) {
       entries = entries.filter(e => e.id !== ctxTargetId);
-      save(); renderGrid();
+      saveToFirebase(entries);
     }
-  }
-
-  function exportConfig() {
-    const text = JSON.stringify(entries, null, 2);
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Config copied to clipboard! Paste it to Claude to push to GitHub.');
-    });
   }
 
   document.addEventListener('click', closeCtx);
@@ -483,7 +516,13 @@
     if (e.key === 'Escape') { closeModal(); closeCtx(); }
   });
 
-  renderGrid();
+  /* Expose modal openers to inline onclick handlers */
+  window.openModal   = openModal;
+  window.closeModal  = closeModal;
+  window.saveEntry   = saveEntry;
+  window.ctxEdit     = ctxEdit;
+  window.ctxOpen     = ctxOpen;
+  window.ctxDelete   = ctxDelete;
 </script>
 </body>
 </html>
