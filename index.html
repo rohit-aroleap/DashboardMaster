@@ -342,12 +342,11 @@
     { id: 8, name: 'Ferra Data Analyst', url: '#', icon: 'R', color: '#2d6a2d' },
   ];
 
-  let entries = JSON.parse(localStorage.getItem('dashboards') || 'null') || DEFAULTS;
+  let entries = [...DEFAULTS];
   let editingId = null;
   let ctxTargetId = null;
   let selectedColor = COLORS[0];
 
-  function save() { localStorage.setItem('dashboards', JSON.stringify(entries)); }
   function nextId() { return entries.length ? Math.max(...entries.map(e => e.id)) + 1 : 1; }
 
   function renderGrid() {
@@ -426,7 +425,7 @@
     } else {
       entries.push({ id: nextId(), name, url, icon, color: selectedColor });
     }
-    save(); closeModal(); renderGrid();
+    closeModal(); renderGrid();
   }
 
   function onCtxMenu(ev) {
@@ -445,7 +444,7 @@
     closeCtx();
     if (confirm('Remove this shortcut?')) {
       entries = entries.filter(e => e.id !== ctxTargetId);
-      save(); renderGrid();
+      renderGrid();
     }
   }
 
