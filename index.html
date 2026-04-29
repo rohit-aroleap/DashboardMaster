@@ -15,6 +15,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 40px 32px;
     }
 
     .page-title {
@@ -23,36 +24,71 @@
       color: #444;
       text-align: center;
       margin-bottom: 4px;
-      letter-spacing: 0.01em;
     }
 
     .page-version {
       font-size: 0.8rem;
       color: #999;
       text-align: center;
-      margin-bottom: 8px;
+      margin-bottom: 32px;
       letter-spacing: 0.05em;
     }
 
-    .export-link {
-      cursor: pointer;
-      color: #7a9af7;
-      text-decoration: underline;
-      font-size: 0.78rem;
+    /* ── Sections ── */
+    .section {
+      width: 100%;
+      max-width: 1100px;
     }
 
-    .export-link:hover { color: #4f6ef7; }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #999;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      padding-left: 4px;
+    }
 
+    .divider {
+      width: 100%;
+      max-width: 1100px;
+      border: none;
+      border-top: 1.5px solid rgba(0,0,0,0.08);
+      margin: 8px 0 24px;
+    }
+
+    /* ── Grids ── */
     .grid {
       display: flex;
       flex-wrap: wrap;
       gap: 8px 4px;
-      justify-content: center;
-      max-width: 1200px;
-      padding: 40px 32px;
+      min-height: 116px;
+      padding: 10px 6px;
+      border-radius: 16px;
+      transition: background 0.2s;
     }
 
-    /* ── Shortcut card ── */
+    .grid.drop-target {
+      background: rgba(79,110,247,0.07);
+      outline: 2px dashed rgba(79,110,247,0.35);
+    }
+
+    /* Empty favourites drop zone */
+    .fav-empty {
+      width: 100%;
+      min-height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbb;
+      font-size: 0.82rem;
+      border: 2px dashed #ccc;
+      border-radius: 14px;
+      pointer-events: none;
+    }
+
+    /* ── Card ── */
     .card {
       display: flex;
       flex-direction: column;
@@ -63,24 +99,14 @@
       width: 112px;
       padding: 12px 6px;
       border-radius: 12px;
-      transition: background 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+      transition: background 0.15s, opacity 0.15s, transform 0.15s;
+      position: relative;
     }
 
-    .card:hover {
-      background: rgba(255,255,255,0.35);
-    }
+    .card:hover { background: rgba(255,255,255,0.35); }
+    .card.dragging { opacity: 0.3; cursor: grabbing; }
+    .card.drag-over { background: rgba(79,110,247,0.13); transform: scale(1.06); }
 
-    .card.dragging {
-      opacity: 0.35;
-      cursor: grabbing;
-    }
-
-    .card.drag-over {
-      background: rgba(79,110,247,0.12);
-      transform: scale(1.05);
-    }
-
-    /* Outer ring = same as page bg, creates the halo effect */
     .icon-outer {
       width: 80px;
       height: 80px;
@@ -89,7 +115,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 0 0 0 transparent;
       flex-shrink: 0;
     }
 
@@ -104,13 +129,23 @@
       font-weight: 700;
       color: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-      transition: box-shadow 0.15s ease, transform 0.15s ease;
+      transition: box-shadow 0.15s, transform 0.15s;
       user-select: none;
     }
 
     .card:hover .icon-inner {
       box-shadow: 0 5px 16px rgba(0,0,0,0.24);
       transform: scale(1.04);
+    }
+
+    /* Star badge on favourited cards in the All section */
+    .fav-badge {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 0.7rem;
+      color: #f5a623;
+      line-height: 1;
     }
 
     .label {
@@ -126,7 +161,7 @@
       -webkit-box-orient: vertical;
     }
 
-    /* ── Add shortcut card ── */
+    /* ── Add card ── */
     .add-card {
       display: flex;
       flex-direction: column;
@@ -136,12 +171,10 @@
       width: 112px;
       padding: 12px 6px;
       border-radius: 12px;
-      transition: background 0.15s ease;
+      transition: background 0.15s;
     }
 
-    .add-card:hover {
-      background: rgba(255,255,255,0.35);
-    }
+    .add-card:hover { background: rgba(255,255,255,0.35); }
 
     .add-outer {
       width: 80px;
@@ -163,7 +196,6 @@
       font-size: 1.6rem;
       color: #777;
       background: rgba(255,255,255,0.55);
-      border: none;
       transition: background 0.15s, color 0.15s, transform 0.15s;
     }
 
@@ -208,12 +240,7 @@
       to   { transform: scale(1);    opacity: 1; }
     }
 
-    .modal h2 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #1a1a1a;
-      margin-bottom: 24px;
-    }
+    .modal h2 { font-size: 1.15rem; font-weight: 700; color: #1a1a1a; margin-bottom: 24px; }
 
     .field { margin-bottom: 16px; }
 
@@ -249,24 +276,14 @@
       border-radius: 50%;
       cursor: pointer;
       border: 3px solid transparent;
-      transition: transform 0.12s, border-color 0.12s;
       outline: 2px solid transparent;
+      transition: transform 0.12s, border-color 0.12s;
     }
 
     .color-swatch:hover { transform: scale(1.18); }
+    .color-swatch.selected { border-color: white; outline-color: #333; transform: scale(1.15); }
 
-    .color-swatch.selected {
-      border-color: white;
-      outline-color: #333;
-      transform: scale(1.15);
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 26px;
-    }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; }
 
     .btn {
       padding: 10px 24px;
@@ -292,7 +309,7 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.18);
       padding: 6px 0;
       z-index: 200;
-      min-width: 150px;
+      min-width: 170px;
     }
 
     .ctx-menu.open { display: block; }
@@ -311,13 +328,27 @@
     .ctx-item:hover { background: #f4f4f4; }
     .ctx-item.danger { color: #d93535; }
     .ctx-item.danger:hover { background: #fff2f2; }
+    .ctx-divider { border: none; border-top: 1px solid #eee; margin: 4px 0; }
   </style>
 </head>
 <body>
 
 <h1 class="page-title">Mother of All Dashboards</h1>
-<p class="page-version">v 1.005</p>
-<div class="grid" id="grid"></div>
+<p class="page-version">v 1.006</p>
+
+<!-- Favourites -->
+<div class="section">
+  <div class="section-label">⭐ Favourites</div>
+  <div class="grid" id="favGrid"></div>
+</div>
+
+<hr class="divider">
+
+<!-- All Dashboards -->
+<div class="section">
+  <div class="section-label">All Dashboards</div>
+  <div class="grid" id="allGrid"></div>
+</div>
 
 <!-- Modal -->
 <div class="modal-overlay" id="modalOverlay">
@@ -348,6 +379,8 @@
 
 <!-- Context menu -->
 <div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-item" id="ctxFavItem" onclick="ctxToggleFav()">⭐ Add to Favourites</div>
+  <hr class="ctx-divider">
   <div class="ctx-item" onclick="ctxEdit()">✏️ Edit</div>
   <div class="ctx-item" onclick="ctxOpen()">↗️ Open in new tab</div>
   <div class="ctx-item danger" onclick="ctxDelete()">🗑️ Remove</div>
@@ -356,7 +389,7 @@
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDsKcndrK7RLA1btM0JzdQJ6ToP_byqBSw",
@@ -369,9 +402,10 @@
     measurementId: "G-RD3Q792CMR"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getDatabase(app);
-  const dbRef = ref(db, 'shortcuts');
+  const app    = initializeApp(firebaseConfig);
+  const db     = getDatabase(app);
+  const dbRef  = ref(db, 'shortcuts');
+  const favRef = ref(db, 'favourites'); // separate ordered list of fav IDs
 
   const COLORS = [
     '#e74c6f','#e8703a','#d4a017','#27ae7a','#2196c8',
@@ -390,97 +424,194 @@
     { id: 9, name: 'Payment Link',           url: 'https://subscriptions.ferra.club/subscribe.html', icon: 'P', color: '#2196c8' },
   ];
 
-  let entries = [];
+  let entries   = [];   // all shortcuts
+  let favIds    = [];   // ordered list of favourite IDs
   let editingId = null;
-  let ctxTargetId = null;
+  let ctxTargetId   = null;
   let selectedColor = COLORS[0];
+  let dragSrcId      = null;
+  let dragSrcSection = null; // 'fav' | 'all'
 
   function nextId() { return entries.length ? Math.max(...entries.map(e => e.id)) + 1 : 1; }
+  function saveEntries()  { set(dbRef,  entries); }
+  function saveFavIds()   { set(favRef, favIds);  }
 
-  /* ── Save all entries to Firebase ── */
-  function saveToFirebase(data) {
-    set(dbRef, data);
+  /* ── Build a card element ── */
+  function makeCard(e, section) {
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = e.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.dataset.id = e.id;
+    a.dataset.section = section;
+    a.draggable = true;
+
+    const isFav = favIds.includes(e.id);
+    a.innerHTML = `
+      ${section === 'all' && isFav ? '<span class="fav-badge">★</span>' : ''}
+      <div class="icon-outer">
+        <div class="icon-inner" style="background:${e.color};">${e.icon}</div>
+      </div>
+      <span class="label">${e.name}</span>
+    `;
+
+    a.addEventListener('contextmenu', onCtxMenu);
+
+    a.addEventListener('dragstart', (ev) => {
+      dragSrcId      = e.id;
+      dragSrcSection = section;
+      setTimeout(() => a.classList.add('dragging'), 0);
+      ev.dataTransfer.effectAllowed = 'move';
+    });
+    a.addEventListener('dragend', () => {
+      a.classList.remove('dragging');
+      document.querySelectorAll('.card, .grid').forEach(el => {
+        el.classList.remove('drag-over', 'drop-target');
+      });
+    });
+    a.addEventListener('dragover', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (e.id !== dragSrcId) a.classList.add('drag-over');
+    });
+    a.addEventListener('dragleave', () => a.classList.remove('drag-over'));
+    a.addEventListener('drop', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      a.classList.remove('drag-over');
+      handleDrop(e.id, section);
+    });
+
+    return a;
   }
 
-  /* ── Drag-and-drop state ── */
-  let dragSrcId = null;
+  /* ── Drop logic ── */
+  function handleDrop(targetId, targetSection) {
+    if (dragSrcId === null) return;
 
-  /* ── Render ── */
-  function renderGrid(data) {
-    const grid = document.getElementById('grid');
-    grid.innerHTML = '';
-
-    data.forEach(e => {
-      const a = document.createElement('a');
-      a.className = 'card';
-      a.href = e.url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.dataset.id = e.id;
-      a.draggable = true;
-
-      a.addEventListener('contextmenu', onCtxMenu);
-
-      /* Drag events */
-      a.addEventListener('dragstart', (ev) => {
-        dragSrcId = e.id;
-        setTimeout(() => a.classList.add('dragging'), 0);
-        ev.dataTransfer.effectAllowed = 'move';
-      });
-      a.addEventListener('dragend', () => {
-        a.classList.remove('dragging');
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('drag-over'));
-      });
-      a.addEventListener('dragover', (ev) => {
-        ev.preventDefault();
-        ev.dataTransfer.dropEffect = 'move';
-        if (e.id !== dragSrcId) a.classList.add('drag-over');
-      });
-      a.addEventListener('dragleave', () => a.classList.remove('drag-over'));
-      a.addEventListener('drop', (ev) => {
-        ev.preventDefault();
-        a.classList.remove('drag-over');
-        if (dragSrcId === e.id) return;
+    if (dragSrcSection === targetSection) {
+      // ── Reorder within same section ──
+      if (dragSrcId === targetId) return;
+      if (targetSection === 'fav') {
+        const from = favIds.indexOf(dragSrcId);
+        const to   = favIds.indexOf(targetId);
+        const reordered = [...favIds];
+        reordered.splice(from, 1);
+        reordered.splice(to, 0, dragSrcId);
+        favIds = reordered;
+        saveFavIds();
+      } else {
         const from = entries.findIndex(x => x.id === dragSrcId);
-        const to   = entries.findIndex(x => x.id === e.id);
+        const to   = entries.findIndex(x => x.id === targetId);
         const reordered = [...entries];
         const [moved] = reordered.splice(from, 1);
         reordered.splice(to, 0, moved);
         entries = reordered;
-        saveToFirebase(entries);
-      });
+        saveEntries();
+      }
+    } else {
+      // ── Move between sections ──
+      if (targetSection === 'fav') {
+        // Add to favourites before targetId
+        if (!favIds.includes(dragSrcId)) {
+          const insertAt = favIds.indexOf(targetId);
+          const newFavIds = [...favIds];
+          newFavIds.splice(insertAt >= 0 ? insertAt : newFavIds.length, 0, dragSrcId);
+          favIds = newFavIds;
+          saveFavIds();
+        }
+      } else {
+        // Remove from favourites
+        favIds = favIds.filter(id => id !== dragSrcId);
+        saveFavIds();
+      }
+    }
+  }
 
-      a.innerHTML = `
-        <div class="icon-outer">
-          <div class="icon-inner" style="background:${e.color};">${e.icon}</div>
-        </div>
-        <span class="label">${e.name}</span>
-      `;
-      grid.appendChild(a);
+  /* ── Render ── */
+  function render() {
+    renderFav();
+    renderAll();
+  }
+
+  function renderFav() {
+    const grid = document.getElementById('favGrid');
+    grid.innerHTML = '';
+
+    const favEntries = favIds.map(id => entries.find(e => e.id === id)).filter(Boolean);
+
+    if (favEntries.length === 0) {
+      grid.innerHTML = '<div class="fav-empty">Drag dashboards here to pin as favourites</div>';
+    } else {
+      favEntries.forEach(e => grid.appendChild(makeCard(e, 'fav')));
+    }
+
+    // Grid-level drop (for dropping onto empty space)
+    grid.addEventListener('dragover', (ev) => {
+      ev.preventDefault();
+      grid.classList.add('drop-target');
     });
+    grid.addEventListener('dragleave', (e) => {
+      if (!grid.contains(e.relatedTarget)) grid.classList.remove('drop-target');
+    });
+    grid.addEventListener('drop', (ev) => {
+      ev.preventDefault();
+      grid.classList.remove('drop-target');
+      // Only act if dropped on the grid itself (not a card — cards handle their own drop)
+      if (ev.target === grid || ev.target.classList.contains('fav-empty')) {
+        if (dragSrcSection === 'all' && !favIds.includes(dragSrcId)) {
+          favIds = [...favIds, dragSrcId];
+          saveFavIds();
+        }
+      }
+    });
+  }
 
+  function renderAll() {
+    const grid = document.getElementById('allGrid');
+    grid.innerHTML = '';
+
+    entries.forEach(e => grid.appendChild(makeCard(e, 'all')));
+
+    // Add shortcut button
     const add = document.createElement('div');
     add.className = 'add-card';
     add.onclick = () => openModal();
     add.innerHTML = `
-      <div class="add-outer">
-        <div class="add-inner">+</div>
-      </div>
+      <div class="add-outer"><div class="add-inner">+</div></div>
       <span class="add-label">Add shortcut</span>
     `;
     grid.appendChild(add);
+
+    // Grid-level drop (for dropping back from fav)
+    grid.addEventListener('dragover', (ev) => {
+      ev.preventDefault();
+      grid.classList.add('drop-target');
+    });
+    grid.addEventListener('dragleave', (e) => {
+      if (!grid.contains(e.relatedTarget)) grid.classList.remove('drop-target');
+    });
+    grid.addEventListener('drop', (ev) => {
+      ev.preventDefault();
+      grid.classList.remove('drop-target');
+      if (ev.target === grid && dragSrcSection === 'fav') {
+        favIds = favIds.filter(id => id !== dragSrcId);
+        saveFavIds();
+      }
+    });
   }
 
-  /* ── Real-time listener — fires for every user instantly ── */
+  /* ── Firebase listeners ── */
   onValue(dbRef, (snapshot) => {
-    if (snapshot.exists()) {
-      entries = snapshot.val();
-    } else {
-      /* First ever load — seed Firebase with defaults */
-      entries = [...DEFAULTS];
-      saveToFirebase(entries);
-    }
-    renderGrid(entries);
+    entries = snapshot.exists() ? snapshot.val() : [...DEFAULTS];
+    if (!snapshot.exists()) saveEntries();
+    render();
+  });
+
+  onValue(favRef, (snapshot) => {
+    favIds = snapshot.exists() ? snapshot.val() : [];
+    render();
   });
 
   /* ── Modal ── */
@@ -518,16 +649,14 @@
     const name = document.getElementById('inputName').value.trim();
     const url  = document.getElementById('inputUrl').value.trim();
     const icon = document.getElementById('inputIcon').value.trim() || name.slice(0,1).toUpperCase();
-
     if (!name) { alert('Please enter a name.'); return; }
     if (!url)  { alert('Please enter a URL.');  return; }
-
     if (editingId) {
       Object.assign(entries.find(e => e.id === editingId), { name, url, icon, color: selectedColor });
     } else {
       entries.push({ id: nextId(), name, url, icon, color: selectedColor });
     }
-    saveToFirebase(entries);
+    saveEntries();
     closeModal();
   }
 
@@ -535,6 +664,8 @@
   function onCtxMenu(ev) {
     ev.preventDefault();
     ctxTargetId = +ev.currentTarget.dataset.id;
+    const isFav = favIds.includes(ctxTargetId);
+    document.getElementById('ctxFavItem').textContent = isFav ? '★ Remove from Favourites' : '⭐ Add to Favourites';
     const menu = document.getElementById('ctxMenu');
     menu.style.left = ev.clientX + 'px';
     menu.style.top  = ev.clientY + 'px';
@@ -543,13 +674,25 @@
 
   function closeCtx() { document.getElementById('ctxMenu').classList.remove('open'); }
 
+  function ctxToggleFav() {
+    closeCtx();
+    if (favIds.includes(ctxTargetId)) {
+      favIds = favIds.filter(id => id !== ctxTargetId);
+    } else {
+      favIds = [...favIds, ctxTargetId];
+    }
+    saveFavIds();
+  }
+
   function ctxEdit()   { closeCtx(); openModal(ctxTargetId); }
   function ctxOpen()   { closeCtx(); const e = entries.find(e => e.id === ctxTargetId); if (e) window.open(e.url, '_blank'); }
   function ctxDelete() {
     closeCtx();
     if (confirm('Remove this shortcut?')) {
       entries = entries.filter(e => e.id !== ctxTargetId);
-      saveToFirebase(entries);
+      favIds  = favIds.filter(id => id !== ctxTargetId);
+      saveEntries();
+      saveFavIds();
     }
   }
 
@@ -561,13 +704,13 @@
     if (e.key === 'Escape') { closeModal(); closeCtx(); }
   });
 
-  /* Expose modal openers to inline onclick handlers */
-  window.openModal   = openModal;
-  window.closeModal  = closeModal;
-  window.saveEntry   = saveEntry;
-  window.ctxEdit     = ctxEdit;
-  window.ctxOpen     = ctxOpen;
-  window.ctxDelete   = ctxDelete;
+  window.openModal  = openModal;
+  window.closeModal = closeModal;
+  window.saveEntry  = saveEntry;
+  window.ctxToggleFav = ctxToggleFav;
+  window.ctxEdit    = ctxEdit;
+  window.ctxOpen    = ctxOpen;
+  window.ctxDelete  = ctxDelete;
 </script>
 </body>
 </html>
